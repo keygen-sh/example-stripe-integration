@@ -1,0 +1,15 @@
+{
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "ejs": "^2.5.7",
+    "express": "^4.15.4",
+    "morgan": "^1.8.2",
+    "node-fetch": "^1.7.2",
+    "stripe": "^4.24.1"
+  }
+}

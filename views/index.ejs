@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Purchase Software</title>
+  </head>
+  <body>
+    <h1>Purchase Software</h1>
+    <form id="register">
+      <label for="first-name">
+        First name
+      </label>
+      <br>
+      <input type="text" name="first-name" id="first-name" value="Elliot" required>
+      <br>
+      <label for="last-name">
+        Last name
+      </label>
+      <br>
+      <input type="text" name="last-name" id="last-name" value="Alderson" required>
+      <br>
+      <label for="email">
+        Email
+      </label>
+      <br>
+      <input type="email" name="email" id="email" value="elliot@example.com" required>
+      <br>
+      <label for="password">
+        Password
+      </label>
+      <br>
+      <input type="password" name="password" id="password" value="fsociety" required>
+      <br>
+      <br>
+      <button type="submit">
+        Buy Now
+      </button>
+    </form>
+    <script src="https://checkout.stripe.com/checkout.js"></script>
+    <script>
+      const STRIPE_PUBLISHABLE_KEY = "<%= STRIPE_PUBLISHABLE_KEY %>"
+      const KEYGEN_ACCOUNT_ID = "<%= KEYGEN_ACCOUNT_ID %>"
+
+      const register = document.getElementById("register")
+      const handler = StripeCheckout.configure({
+        key: STRIPE_PUBLISHABLE_KEY,
+        token: async ({ id: stripeToken }) => {
+          const attributes = {
+            firstName: document.getElementById("first-name").value,
+            lastName: document.getElementById("last-name").value,
+            email: document.getElementById("email").value,
+            password: document.getElementById("password").value,
+            metadata: { stripeToken } // Temporarily store this so our webhooks can do their thing
+          }
+
+          // Create the Keygen user
+          const response = await fetch(`https://api.keygen.sh/v1/accounts/${KEYGEN_ACCOUNT_ID}/users`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/vnd.api+json",
+              "Accept": "application/vnd.api+json"
+            },
+            body: JSON.stringify({
+              data: { type: "users", attributes }
+            })
+          })
+
+          const { data, errors } = await response.json()
+          if (errors) {
+            throw new Error(errors.map(e => e.detail).toString())
+          }
+
+          // All good! The webhooks will handle the rest. :)
+
+          register.parentNode.innerHTML = `Thanks for your purchase, ${data.attributes.firstName}! 👊💥`
+        }
+      })
+
+      register.addEventListener("submit", event => {
+        event.preventDefault()
+
+        handler.open({
+          panelLabel: "Purchase Software",
+          name: "Keygen"
+        })
+      })
+    </script>
+  </body>
+</html>

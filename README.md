@@ -53,8 +53,6 @@ For local development, create an [`ngrok`](https://ngrok.com) tunnel:
 ngrok http 8080
 ```
 
-## Testing webhook URLs
-
 Next up, add the secure `ngrok` URL to your Stripe and Keygen accounts to
 listen for webhooks.
 

@@ -45,10 +45,13 @@ app.post("/keygen-webhooks", async (req, res) => {
     case "user.created":
       const { data: keygenUser } = JSON.parse(keygenEvent.attributes.payload)
 
+      // Make sure our Keygen user has a Stripe token, or else we can't charge them later on..
       if (!keygenUser.attributes.metadata.stripeToken) {
         throw new Error(`User ${keygenUser.id} does not have a Stripe token attached to their user account!`)
       }
 
+      // 2. Create a Stripe customer, making sure we use our Stripe token as their payment
+      //    method of choice.
       const stripeCustomer = await stripe.customers.create({
         description: `Customer for Keygen user ${keygenUser.attributes.email}`,
         email: keygenUser.attributes.email,
@@ -60,7 +63,7 @@ app.post("/keygen-webhooks", async (req, res) => {
         metadata: { keygenUserId: keygenUser.id }
       })
 
-      // 2. Add the user's Stripe customer ID to the user's metadata attribute so that
+      // 3. Add the user's Stripe customer ID to the user's metadata attribute so that
       //    we can lookup their Stripe customer account when needed.
       const update = await fetch(`https://api.keygen.sh/v1/accounts/${KEYGEN_ACCOUNT_ID}/users/${keygenUser.id}`, {
         method: "PATCH",
@@ -98,24 +101,26 @@ app.post("/stripe-webhooks", async (req, res) => {
   const { body: stripeEvent } = req
 
   switch (stripeEvent.type) {
-    // 3. Respond to customer creation events within your Stripe account. Here, we'll
+    // 4. Respond to customer creation events within your Stripe account. Here, we'll
     //    create a new Stripe subscription for the customer as well as a Keygen license
     //    for the Keygen user that belongs to the Stripe customer.
     case "customer.created":
       const { object: stripeCustomer } = stripeEvent.data
 
+      // Make sure our Stripe customer has a Keygen user ID, or else we can't work with it.
       if (!stripeCustomer.metadata.keygenUserId) {
         throw new Error(`Customer ${stripeCustomer.id} does not have a Keygen user ID attached to their customer account!`)
       }
 
-      // 4. Create a subscription for the new Stripe customer. This will charge the
-      //    Stripe customer.
+      // 5. Create a subscription for the new Stripe customer. This will charge the
+      //    Stripe customer. (You may or may not want to also check if the customer
+      //    already has an existing subscription.)
       const stripeSubscription = await stripe.subscriptions.create({
         customer: stripeCustomer.id,
         plan: STRIPE_PLAN_ID
       })
 
-      // 5. Create a license for the new Stripe customer after we create a subscription
+      // 6. Create a license for the new Stripe customer after we create a subscription
       //    for them. We're pulling the Keygen user's ID from the Stripe customer's
       //    metadata attribute (we stored it there earler).
       const keygenLicense = await fetch(`https://api.keygen.sh/v1/accounts/${KEYGEN_ACCOUNT_ID}/licenses`, {
@@ -145,12 +150,15 @@ app.post("/stripe-webhooks", async (req, res) => {
 
       const { data, errors } = await keygenLicense.json()
       if (errors) {
+        // If you receive an error here, then you may want to handle the fact the customer
+        // may have been charged for a license that they didn't receive e.g. easiest way
+        // would be to create it manually, or refund their subscription charge.
         throw new Error(errors.map(e => e.detail).toString())
       }
 
       // All is good! License was successfully created for the new Stripe customer's
       // Keygen user account. Next up would be for us to email the license key to
-      // our user's email using `stripeCustomer.email`
+      // our user's email using `stripeCustomer.email` or something similar.
 
       // Let Stripe know the event was received successfully.
       res.sendStatus(200)

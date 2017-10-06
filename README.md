@@ -46,7 +46,9 @@ Then start the app:
 yarn start
 ```
 
-And finally, create an [`ngrok`](https://ngrok.com) tunnel:
+## Testing webhooks locally
+
+For local development, create an [`ngrok`](https://ngrok.com) tunnel:
 ```
 ngrok http 8080
 ```

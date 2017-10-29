@@ -155,6 +155,8 @@ app.post("/stripe-webhooks", async (req, res) => {
 
       const { data, errors } = await keygenLicense.json()
       if (errors) {
+        res.sendStatus(500)
+
         // If you receive an error here, then you may want to handle the fact the customer
         // may have been charged for a license that they didn't receive e.g. easiest way
         // would be to create it manually, or refund their subscription charge.

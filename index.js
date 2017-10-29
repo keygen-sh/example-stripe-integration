@@ -118,6 +118,11 @@ app.post("/stripe-webhooks", async (req, res) => {
       const stripeSubscription = await stripe.subscriptions.create({
         customer: stripeCustomer.id,
         plan: STRIPE_PLAN_ID
+      }, {
+        // Use an idempotency key so that we don't charge a customer more than one
+        // time regardless of how many times this webhook is retried.
+        // See: https://stripe.com/docs/api/node#idempotent_requests
+        idempotency_key: keygenUserId
       })
 
       // 6. Create a license for the new Stripe customer after we create a subscription

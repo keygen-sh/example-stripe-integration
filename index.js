@@ -122,7 +122,7 @@ app.post("/stripe-webhooks", async (req, res) => {
         // Use an idempotency key so that we don't charge a customer more than one
         // time regardless of how many times this webhook is retried.
         // See: https://stripe.com/docs/api/node#idempotent_requests
-        idempotency_key: keygenUserId
+        idempotency_key: stripeCustomer.metadata.keygenUserId
       })
 
       // 6. Create a license for the new Stripe customer after we create a subscription

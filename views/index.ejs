@@ -67,7 +67,11 @@
 
           const { data, errors } = await response.json()
           if (errors) {
-            throw new Error(errors.map(e => e.detail).toString())
+            const message = errors.map(e => e.detail).toString()
+
+            register.parentNode.innerHTML = `An error occurred during user creation: ${message} (double check your ENV vars)`
+
+            throw new Error(message)
           }
 
           // All good! The webhooks will handle the rest. :)

@@ -46,18 +46,22 @@ Then start the app:
 yarn start
 ```
 
-## Testing webhooks locally
+## Configuring the webhooks
 
-For local development, create an [`ngrok`](https://ngrok.com) tunnel:
+For local development, create an [`ngrok`](https://ngrok.com) tunnel to your
+local development server:
 ```
 ngrok http 8080
 ```
 
-Next up, add the secure `ngrok` URL to your Stripe and Keygen accounts to
+Next up, add the generated `ngrok` URL to your Stripe and Keygen accounts to
 listen for webhooks.
 
 1. **Stripe:** add `https://{YOUR_NGROK_URL}/stripe-webhooks` to https://dashboard.stripe.com/account/webhooks
 1. **Keygen:** add `https://{YOUR_NGROK_URL}/keygen-webhooks` to https://app.keygen.sh/webhook-endpoints
+
+> **In a production environment, you would use your actual server info in place of
+> the `ngrok` URLs above.**
 
 ## Testing the integration
 

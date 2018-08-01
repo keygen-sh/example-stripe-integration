@@ -67,6 +67,35 @@ listen for webhooks.
 
 Visit the following url: http://localhost:8080 and fill out the purchase form.
 
+## Common Issues
+
+### Incorrect ENV variables
+
+In case of errors, please double check all of your environment variables.
+If one of the variables are incorrect, it may cause API authentication
+issues.
+
+### Protected account
+
+**Please note that this example requires that your Keygen account is
+set to unprotected**, because this example handles user creation
+on the front-end. You can update this setting on your [account's
+settings page](https://app.keygen.sh/settings). If you would prefer
+to keep your account protected, the logic for user creation would
+need to be moved to a server-side URL.
+
+### Other issues
+
+Here's a few things to double check when a problem arises:
+
+1. Make sure you're using the correct account ID (find yours [here](https://app.keygen.sh/settings))
+1. Make sure you're using a product token or admin token (the token should start with `prod-` or `admi-`)
+1. Make sure you're using the correct policy ID (it should be a UUID)
+1. Make sure that your Stripe environment variables are correct
+1. Make sure all dependencies have been installed via `yarn install`
+1. Make sure you have correctly configured webhooks for both Keygen _and_ Stripe
+1. Make sure that the webhook URL is accessible from the public internet via `ngrok`
+
 ## Questions?
 
 Reach out at [support@keygen.sh](mailto:support@keygen.sh) if you have any

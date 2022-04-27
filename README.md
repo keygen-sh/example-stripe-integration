@@ -8,6 +8,8 @@ revocation when a subscription is canceled, etc.
 > get you 90% of the way there. You may need to add additional logging,
 > error handling, as well as listening for additional webhook events.
 
+🚨 Don't want to host your own webhook server? Check out [our Zapier integration](keygen.sh/integrate/zapier/).
+
 ## Running the app
 
 First up, configure a few environment variables:

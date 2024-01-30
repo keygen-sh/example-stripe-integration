@@ -38,6 +38,16 @@ You can either run each line above within your terminal session before
 starting the app, or you can add the above contents to your `~/.bashrc`
 file and then run `source ~/.bashrc` after saving the file.
 
+A `STRIPE_PUBLISHABLE_KEY` looks like `pk_test_51O...kN` (if you're running in the test environment) and can be found at https://dashboard.stripe.com/test/apikeys, as can the `STRIPE_SECRET_KEY`. Just click the button to reveal the secret key.
+
+The `STRIPE_PLAN_ID` can be found at https://dashboard.stripe.com/subscriptions/products/ Choose a product to use. There are a lot of IDs on that page, but the one at the top-right, `prod_PTH...k4` is the one you want.
+
+The `KEYGEN_PRODUCT_TOKEN` can be found at https://app.keygen.sh/products then click on the product. The token will be a UUI of the form `5X3XY89X-1234-4XYX-1234-8925XY07YZ7X`.
+
+The `KEYGEN_ACCOUNT_ID` is at https://app.keygen.sh/settings.
+
+The `KEYGEN_POLICY_ID` is found at https://app.keygen.sh/policies. 
+
 Next, install dependencies with [`yarn`](https://yarnpkg.comg):
 ```
 yarn
